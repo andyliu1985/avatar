@@ -1,9 +1,0 @@
-, pacific: [
-                { row1Col1: "pacific row1 col1", row1Col2: "pacific row1 col2", row1Col3: "pacific row1 col3" },
-                { row1Col1: "pacific row2 col1", row1Col2: "pacific row2 col3", row1Col3: "pacific row2 col3" },
-            ]
-
-            data: [
-                { row1Col1: "asia row1 col1", row1Col2: "asia row1 col2", row1Col3: "asia row1 col3" },
-                { row1Col1: "asia row2 col1", row1Col2: "asia row2 col2", row1Col3: "asia row2 col3" },
-            ]
