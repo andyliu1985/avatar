@@ -10,15 +10,9 @@ class Avatar extends React.Component {
             isLoaded2: false,
             users: [],
             user: {
-                "login": "mojombo",
-                "name": "Tom Preston-Werner",
-                "avatar_url": "https://avatars0.githubusercontent.com/u/1?v=4",
-                "followers": 21375
-            },
-            defaultUser: {
-                "login": "mojombo",
-                "name": "Tom Preston-Werner",
-                "avatar_url": "https://avatars0.githubusercontent.com/u/1?v=4",
+                "login": "andyliu",
+                "name": "Andy Leu",
+                "avatar_url": "https://avatars0.githubusercontent.com/u/100?v=4",
                 "followers": 21375
             }
         };
@@ -29,7 +23,7 @@ class Avatar extends React.Component {
 
     componentDidMount() {
         if (!this.state.isLoaded1) {
-            fetch(this.baseURL)
+            fetch(this.baseURL + "?access_token=e1f84fb3f213b5b68c29e9b394e669eb39dc2730")
                 .then(res => res.json())
                 .then(
                     (result) => {
@@ -67,15 +61,16 @@ class Avatar extends React.Component {
             //     }
             // });
             for (var i = 0; i < this.state.users.length; i++) {
-                if (i < 5) {
-                    const eachUser = this.state.users[i];
-                    const name = eachUser.login;
-                    if (this.searchContinue) {
-                        console.log("index: " + i + "; name: " + name);
-                        this.searchContinue = false;
-                        this.getFullName(name);
-                    }
+                const eachUser = this.state.users[i];
+                // console.log("each user name:"+ this.state.users.length);
+                const name = eachUser.login;
+                if (this.searchContinue) {
+                    console.log("index: " + i + "; name: " + name);
+                    this.searchContinue = false;
+                    this.getFullName(name);
                 }
+
+                console.log("who first:"+ this.searchContinue);
             }
         }
     }
@@ -85,29 +80,33 @@ class Avatar extends React.Component {
         this.update(e);
     }
 
-    getFullName(name) {
+    async getFullName(name) {
         console.log("name:" + name + "; continue: " + this.searchContinue);
 
-        fetch(this.baseURL + "/" + name)
+        await fetch(this.baseURL + "/" + name + "?access_token=e1f84fb3f213b5b68c29e9b394e669eb39dc2730")
             .then(res => res.json())
             .then(
                 (result) => {
                     this.setState({
                         user: result,
                         isLoaded2: true
-                    })
+                    });
                 },
                 (error) => ({
                     isLoaded2: false,
                     error
                 })
-            )
+                // .then(()=>{
+                //     console.log("name:" + this.state.user.name);
 
-        if (this.state.user.name.indexOf(name) > 0) {
-            this.searchContinue = false;
-        } else {
+                // })
+            )
+        console.log("name:" + this.state.user.name);
+        if (this.state.user.name.indexOf(name) < 0) {
             this.searchContinue = true;
         }
+        console.log("name:" + name + "; continue: " + this.searchContinue);
+
     }
 
     render() {
