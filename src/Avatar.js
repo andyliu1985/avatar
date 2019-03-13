@@ -5,6 +5,7 @@ class Avatar extends React.Component {
         super();
         this.baseURL = "https://api.github.com/users";
         this.searchContinue = true;
+        this.searchText = "";
         this.state = {
             isLoaded1: false,
             isLoaded2: false,
@@ -38,39 +39,28 @@ class Avatar extends React.Component {
                     })
                 )
         }
-        console.log(this.state.isLoaded1);
+
     }
 
     update(e) {
         const searchText = e.target.value;
+        this.searchText = searchText;
         console.log(searchText);
         if (this.state.isLoaded1) {
-            // this.state.users.map((eachUser, index) => {
-            //     if (index < 5) {
-            //         const name = eachUser.login;
-            //         if (this.searchContinue) {
-            //             console.log("index"+index);
-            //             this.searchContinue = false;
-            //             this.getFullName(name);
-            //         }
-            //     }
-            //     if (this.state.isLoaded2) {
-            //         return this.state.user;
-            //     } else {
-            //         return this.state.defaultUser;
-            //     }
-            // });
             for (var i = 0; i < this.state.users.length; i++) {
-                const eachUser = this.state.users[i];
-                // console.log("each user name:"+ this.state.users.length);
-                const name = eachUser.login;
-                if (this.searchContinue) {
-                    console.log("index: " + i + "; name: " + name);
-                    this.searchContinue = false;
-                    this.getFullName(name);
+                if (i < 20) {
+                    const eachUser = this.state.users[i];
+                    // console.log("each user name:");
+                    const name = eachUser.login;
+                    if (this.searchContinue) {
+                        console.log("index: " + i + "; name: " + name);
+                        // this.searchContinue = false;
+                        this.getFullName(name);
+                        console.log("who first:" + this.searchContinue);
+                    }
+
                 }
 
-                console.log("who first:"+ this.searchContinue);
             }
         }
     }
@@ -81,7 +71,7 @@ class Avatar extends React.Component {
     }
 
     async getFullName(name) {
-        console.log("name:" + name + "; continue: " + this.searchContinue);
+        console.log("getFullName enter:" + name + "; continue: " + this.searchContinue);
 
         await fetch(this.baseURL + "/" + name + "?access_token=e1f84fb3f213b5b68c29e9b394e669eb39dc2730")
             .then(res => res.json())
@@ -96,20 +86,16 @@ class Avatar extends React.Component {
                     isLoaded2: false,
                     error
                 })
-                // .then(()=>{
-                //     console.log("name:" + this.state.user.name);
-
-                // })
             )
-        console.log("name:" + this.state.user.name);
-        if (this.state.user.name.indexOf(name) < 0) {
-            this.searchContinue = true;
-        }
-        console.log("name:" + name + "; continue: " + this.searchContinue);
 
+        // console.log("getFullName exit:" + name + "; continue: " + this.searchContinue);
     }
 
     render() {
+        console.log("render: " + this.state.user.name);
+        if (this.state.user.name.indexOf(this.searchText) > 0) {
+            this.searchContinue = false;
+        }
         return (
             <div>
                 <input type="search" placeholder="search ..." onChange={this.search}></input>
