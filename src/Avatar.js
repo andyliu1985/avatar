@@ -5,105 +5,126 @@ class Avatar extends React.Component {
         super();
         this.baseURL = "https://api.github.com/users";
         this.searchContinue = true;
-        this.searchText = "";
         this.state = {
-            isLoaded1: false,
-            isLoaded2: false,
+            isAllUsersLoaded: true,
+            isProfileLoaded: true,
             users: [],
-            user: {
-                "login": "andyliu",
-                "name": "Andy Leu",
-                "avatar_url": "https://avatars0.githubusercontent.com/u/100?v=4",
-                "followers": 21375
-            }
+            user: {},
+            errorMsg: ""
         };
         this.search = this.search.bind(this);
-        this.update = this.update.bind(this);
-        this.getFullName = this.getFullName.bind(this);
+        this.getProfile = this.getProfile.bind(this);
     }
 
     componentDidMount() {
-        if (!this.state.isLoaded1) {
-            fetch(this.baseURL + "?access_token=e1f84fb3f213b5b68c29e9b394e669eb39dc2730")
-                .then(res => res.json())
-                .then(
-                    (result) => {
-                        this.setState({
-                            isLoaded1: true,
-                            users: result
-                        })
-                    },
-                    (error) => ({
-                        isLoaded1: false,
-                        error
-                    })
-                )
-        }
-
-    }
-
-    update(e) {
-        const searchText = e.target.value;
-        this.searchText = searchText;
-        console.log(searchText);
-        if (this.state.isLoaded1) {
-            for (var i = 0; i < this.state.users.length; i++) {
-                if (i < 20) {
-                    const eachUser = this.state.users[i];
-                    // console.log("each user name:");
-                    const name = eachUser.login;
-                    if (this.searchContinue) {
-                        console.log("index: " + i + "; name: " + name);
-                        // this.searchContinue = false;
-                        this.getFullName(name);
-                        console.log("who first:" + this.searchContinue);
-                    }
-
-                }
-
-            }
-        }
-    }
-
-    search(e) {
-        this.searchContinue = true;
-        this.update(e);
-    }
-
-    async getFullName(name) {
-        console.log("getFullName enter:" + name + "; continue: " + this.searchContinue);
-
-        await fetch(this.baseURL + "/" + name + "?access_token=e1f84fb3f213b5b68c29e9b394e669eb39dc2730")
+        fetch(this.baseURL + "?access_token=e1f84fb3f213b5b68c29e9b394e669eb39dc2730")
             .then(res => res.json())
             .then(
                 (result) => {
                     this.setState({
-                        user: result,
-                        isLoaded2: true
+                        isAllUsersLoaded: true,
+                        users: result
+                    })
+                },
+                (error) => {
+                    this.setState({
+                        isAllUsersLoaded: false,
+                        errorMsg: "Can not load all users."
+                    })
+
+                }
+            ).then(() => {
+                if (this.state.isAllUsersLoaded) {
+                    this.setState({
+                        user: this.state.users[0]
+                    })
+                } else {
+                    this.setState({
+                        user: {}
+                    })
+                }
+            })
+    }
+
+    search(e) {
+        this.searchContinue = true;
+        let keyWord = e.target.value;
+        if (this.state.isAllUsersLoaded) {
+            for (var i = 0; i < this.state.users.length; i++) {
+
+                let user = this.state.users[i];
+                let loginId = user.login;
+
+                if (this.searchContinue && loginId.indexOf(keyWord) > 0) {
+                    this.searchContinue = false;
+                    this.getProfile(loginId);
+                }
+            }
+
+            if (this.searchContinue) {
+                this.setState({
+                    isProfileLoaded: false,
+                    errorMsg: "Can not find this id: " + keyWord
+                })
+            }
+        }
+    }
+
+    getProfile(loginId) {
+        fetch(this.baseURL + "/" + loginId + "?access_token=e1f84fb3f213b5b68c29e9b394e669eb39dc2730")
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    this.setState({
+                        isProfileLoaded: true,
+                        user: result
                     });
                 },
-                (error) => ({
-                    isLoaded2: false,
-                    error
-                })
-            )
+                (error) => {
+                    this.setState({
+                        isProfileLoaded: false,
+                        errorMsg: "Can not load this id: " + loginId
+                    })
 
-        // console.log("getFullName exit:" + name + "; continue: " + this.searchContinue);
+                }
+            )
     }
 
     render() {
-        console.log("render: " + this.state.user.name);
-        if (this.state.user.name.indexOf(this.searchText) > 0) {
-            this.searchContinue = false;
+        let divDisplay = 'block';
+        let errDisplay = 'none';
+        if (this.state.isAllUsersLoaded && this.state.isProfileLoaded) {
+            divDisplay = 'block';
+            errDisplay = 'none';
+        } else {
+            divDisplay = 'none';
+            errDisplay = 'block';
         }
+
+        const divStyle = {
+            display: divDisplay
+
+        }
+
+        const errStyle = {
+            display: errDisplay
+
+        }
+
         return (
             <div>
-                <input type="search" placeholder="search ..." onChange={this.search}></input>
+                <input type="search" placeholder="search profile by github id ..." onChange={this.search}></input>
                 <br /><br />
-                <img src={this.state.user.avatar_url} height="100" width="100" alt="profile"></img>
-                <h1>Github ID: {this.state.user.login}</h1>
-                <h1>Full Name: {this.state.user.name}</h1>
-                <h1>Followers: {this.state.user.followers}</h1>
+                <div style={divStyle}>
+                    <img src={this.state.user.avatar_url} height="100" width="100" alt="profile"></img>
+                    <h1>Github ID: {this.state.user.login}</h1>
+                    <h1>Full Name: {this.state.user.name}</h1>
+                    <h1>Followers: {this.state.user.followers}</h1>
+                </div>
+                <div style={errStyle}>
+                    <h1>Error: {this.state.errorMsg}</h1>
+                </div>
+
             </div>
         );
     };
