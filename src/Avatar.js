@@ -9,7 +9,12 @@ class Avatar extends React.Component {
             isAllUsersLoaded: true,
             isProfileLoaded: true,
             users: [],
-            user: {},
+            user: {
+                login: "mojombo",
+                avatar_url: "https://avatars0.githubusercontent.com/u/1?v=4",
+                name: "Tom Preston-Werner",
+                followers: 21381
+            },
             errorMsg: ""
         };
         this.search = this.search.bind(this);
@@ -33,17 +38,7 @@ class Avatar extends React.Component {
                     })
 
                 }
-            ).then(() => {
-                if (this.state.isAllUsersLoaded) {
-                    this.setState({
-                        user: this.state.users[0]
-                    })
-                } else {
-                    this.setState({
-                        user: {}
-                    })
-                }
-            })
+            )
     }
 
     search(e) {
