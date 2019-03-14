@@ -49,7 +49,7 @@ class Avatar extends React.Component {
     search(e) {
         this.searchContinue = true;
         let keyWord = e.target.value;
-        if (this.state.isAllUsersLoaded) {
+        if (this.state.isAllUsersLoaded && keyWord !== "") {
             for (var i = 0; i < this.state.users.length; i++) {
 
                 let user = this.state.users[i];
