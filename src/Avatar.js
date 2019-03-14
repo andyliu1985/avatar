@@ -44,13 +44,16 @@ class Avatar extends React.Component {
     search(e) {
         this.searchContinue = true;
         let keyWord = e.target.value;
+        // console.log("keyword: "+keyWord);
         if (this.state.isAllUsersLoaded && keyWord !== "") {
             for (var i = 0; i < this.state.users.length; i++) {
 
                 let user = this.state.users[i];
                 let loginId = user.login;
 
-                if (this.searchContinue && loginId.indexOf(keyWord) > 0) {
+                // console.log("loginId: "+loginId + " continue?"+ this.searchContinue + "contain?" + loginId.indexOf(keyWord));
+
+                if (this.searchContinue && loginId.indexOf(keyWord) >= 0) {
                     this.searchContinue = false;
                     this.getProfile(loginId);
                 }
